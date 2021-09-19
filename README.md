@@ -9,15 +9,15 @@ Want something for Linux? Try [Timekpr-nExT](https://www.linuxuprising.com/2019/
 - Individual duration for every day of the week
 - Notifications
 
-# Building
-Move to `src` and type `go build -ldflags "-H windowsgui"`
-
 # Usage
 Set the durations in minutes in `time.json`.  
   
 Run the program on login by either using autostart (Win+R, "shell:startup") or task scheduler (remember to set the working directory).  
   
 Optional: Run the [Tray Notifier](https://github.com/rrune/LoginLimiterNotifier).
+
+# Building
+Move to `src` and type `go build -ldflags "-H windowsgui"`
 
 # Additional Info
 - Adding time for today:  
