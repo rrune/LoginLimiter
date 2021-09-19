@@ -30,8 +30,8 @@ Move to `src` and type `go build -ldflags "-H windowsgui"`
   
 - Can this be circumvented?:
   
-  In short: yes. Especially if the user is an administrator, there is no real way to prevent them from killing the process. But even then, knowing how to do it requires at least a little but of knowledge. In reality, the process will be buried somewhere in the task manager without an icon and with the name of the exe as its name. So if the exe is renamed to something weird like vifdnd.exe (very important file do not delete), it's likely a normal user won't immediately find and associate it with the Limiter. Pair it with the Notifier that sits in the Tray with a proper name and icon as a decoy and most normal users won't know the right process to kill. If the user is no administrator, there are ways to actually prevent the user from killing it.
-
+  There are always ways to circumvent stuff. If the user is no administrator and this program is run as one, they should at least not be able to kill it. If the user is an administrator, there is no real way to prevent them from killing the process. But even then, knowing how to do it requires at least a little but of knowledge. In reality, the process will be buried somewhere in the task manager without an icon and with the name of the exe as its name. So if the exe is renamed to something weird like vifdnd.exe (very important file do not delete), it's likely a normal user won't immediately find and associate it with the Limiter. Pair it with the Notifier that sits in the Tray with a proper name and icon as a decoy and most normal users won't know the right process to kill. 
+  
 - Pull Requests: 
   
   If you feel like you can improve this, or just want to fix my code (or the formatting of this Readme), feel free. I probably won't work on it further but will get notified about pull requests and will most likely approve them if they add value
