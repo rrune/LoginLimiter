@@ -6,11 +6,14 @@ Want something for Linux? Try [Timekpr-nExT](https://www.linuxuprising.com/2019/
 
 # Features
 - Limit the duration a windows user can be logged in per day  
+- Limit the time of day a user can be logged in
 - Individual duration for every day of the week
 - Notifications
 
 # Usage
 Set the durations in minutes in `time.json`.  
+
+Set the time of day a user can be logged in. To deactivate, change both to "0000"  
   
 Run the program on login by either using autostart (Win+R, "shell:startup") or task scheduler (remember to set the working directory).  
   
