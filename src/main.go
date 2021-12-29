@@ -3,15 +3,19 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gen2brain/beeep"
 )
 
 type timesStruct struct {
+	URL      string `json:"url"`
 	MaxTimes struct {
 		Fri int `json:"Fri"`
 		Mon int `json:"Mon"`
@@ -73,18 +77,31 @@ func main() {
 	data, err := os.ReadFile("./time.json")
 	if err != nil {
 		//if file doesnt exist
-		data = []byte(`{"maxTimes":{"Fri":120,"Mon":120,"Sat":120,"Sun":120,"Thu":120,"Tue":120,"Wed":120},"dayTimes": {"notAfter": "0100","notBefore": "0800"},"timeLeft":{"left":0,"date":"` + time.Now().Format("01-02-2006") + `"}}`)
+		data = []byte(`{"url": "", "maxTimes":{"Fri":120,"Mon":120,"Sat":120,"Sun":120,"Thu":120,"Tue":120,"Wed":120},"dayTimes": {"notAfter": "0100","notBefore": "0800"},"timeLeft":{"left":0,"date":"` + time.Now().Format("01-02-2006") + `"}}`)
 		err = os.WriteFile("./time.json", data, 0644)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
 	var times timesStruct
-
 	err = json.Unmarshal([]byte(data), &times)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	//get URL content, if contains true, program will exit
+	//this can be used to deactivate the whole thing from afar
+	//the notifier wont stop, but wont do anything on its own
+	resp, err := http.Get(times.URL)
+	if err == nil {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err == nil {
+			if strings.Contains(string(body), "true") {
+				os.Exit(0)
+			}
+		}
+	}
+	resp.Body.Close()
 
 	startTime := time.Now()
 
@@ -96,16 +113,19 @@ func main() {
 		beforeAddDay = 1
 	}
 
+	//time when to logout due to DayTimes
+	notAfter = getBeforeAfterTime(startTime, times.DayTimes.NotAfter)
+	notBefore = getBeforeAfterTime(startTime.AddDate(0, 0, beforeAddDay), times.DayTimes.NotBefore)
+
 	//time for logout
 	endTime := startTime.Add(time.Minute * time.Duration(times.TimeLeft.Left))
+	if endTime.After(notAfter) {
+		endTime = notAfter
+	}
 
 	for range time.Tick(time.Minute * 1) {
 		//current time
 		now := time.Now()
-
-		//time of day
-		notAfter := getBeforeAfterTime(now, times.DayTimes.NotAfter)
-		notBefore := getBeforeAfterTime(now.AddDate(0, 0, beforeAddDay), times.DayTimes.NotBefore)
 
 		//logout when not during allowed time of day
 		if now.After(notAfter) && now.Before(notBefore) {
@@ -119,6 +139,9 @@ func main() {
 			times.TimeLeft.Date = now.Format("01-02-2006")
 			times.TimeLeft.Left = times.getLimit(now)
 			endTime = startTime.Add(time.Minute * time.Duration(times.TimeLeft.Left))
+			if endTime.After(notAfter) {
+				endTime = notAfter
+			}
 		}
 
 		//time left
